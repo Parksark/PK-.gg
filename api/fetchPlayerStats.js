@@ -1,5 +1,7 @@
+// /api/fetchPlayerStats.js
+
 export async function fetchPlayerStats(playerName) {
-  const apiKey = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI3MDNhNDhhMC0wMjI1LTAxM2UtMzAwYi0wNjFhOWQ1YjYxYWYiLCJpc3MiOiJnYW1lbG9ja2VyIiwiaWF0IjoxNzQ1MzgwODM3LCJwdWIiOiJibHVlaG9sZSIsInRpdGxlIjoicHViZyIsImFwcCI6InViZCJ9.hs5WCvTM6d0W_y0lsYzpbkREq61PD1p7vbibOGTFK3o';
+  const apiKey = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI3MDNhNDhhMC0wMjI1LTAxM2UtMzAwYi0wNjFhOWQ1YjYxYWYiLCJpc3MiOiJnYW1lbG9ja2VyIiwiaWF0IjoxNzQ1MzgwODM3LCJwdWIiOiJibHVlaG9sZSIsInRpdGxlIjoicHViZyIsImFwcCI6InViZCJ9.hs5WCvTM6d0W_y0lsYzpbkREq61PD1p7vbibOGTFK3o'; // 🔥 꼭 형 키로 교체!
 
   // 1. 플레이어 검색해서 UUID(playerId) 얻기
   const playerRes = await fetch(`https://api.pubg.com/shards/steam/players?filter[playerNames]=${playerName}`, {
@@ -10,13 +12,15 @@ export async function fetchPlayerStats(playerName) {
   });
 
   if (!playerRes.ok) {
+    console.error('플레이어 정보 불러오기 실패:', playerName);
     throw new Error(`플레이어 정보 불러오기 실패: ${playerName}`);
   }
 
   const playerData = await playerRes.json();
-  const playerId = playerData.data[0]?.id; // player UUID
+  const playerId = playerData.data[0]?.id;
 
   if (!playerId) {
+    console.error('플레이어 ID 없음:', playerName);
     throw new Error(`플레이어 ID 없음: ${playerName}`);
   }
 
@@ -29,11 +33,12 @@ export async function fetchPlayerStats(playerName) {
   });
 
   if (!matchesRes.ok) {
+    console.error('매치 리스트 불러오기 실패:', playerName);
     throw new Error(`매치 리스트 불러오기 실패: ${playerName}`);
   }
 
   const matchesData = await matchesRes.json();
-  const matchIds = matchesData.data.slice(0, 20).map(match => match.id); // 최근 20판 매치 ID 추출
+  const matchIds = matchesData.data?.slice(0, 20).map(match => match.id) || [];
 
   let totalDamage = 0;
   let matchCount = 0;
@@ -68,37 +73,3 @@ export async function fetchPlayerStats(playerName) {
     averageDamage
   };
 }
-const playerData = await playerRes.json();
-console.log('플레이어 데이터:', playerData);  // 🔥 추가
-
-const matchesData = await matchesRes.json();
-console.log('매치 데이터:', matchesData);  // 🔥 추가
-
-const matchIds = matchesData.data.slice(0, 20).map(match => match.id);
-console.log('최근 매치 ID 리스트:', matchIds);  // 🔥 추가
-
-let totalDamage = 0;
-let matchCount = 0;
-
-for (const matchId of matchIds) {
-  const matchRes = await fetch(`https://api.pubg.com/shards/steam/matches/${matchId}`, {
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      Accept: 'application/vnd.api+json'
-    }
-  });
-
-  if (matchRes.ok) {
-    const matchData = await matchRes.json();
-    const playerStats = matchData.included.find(
-      item => item.type === 'participant' && item.attributes.stats.name === playerName
-    );
-
-    if (playerStats) {
-      totalDamage += playerStats.attributes.stats.damageDealt;
-      matchCount += 1;
-    }
-  }
-}
-
-console.log('총 딜량:', totalDamage, '총 경기 수:', matchCount);  // 🔥 추가
