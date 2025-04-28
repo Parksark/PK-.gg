@@ -86,11 +86,6 @@ export default function UBD() {
     </div>
   );
 }
-import Header from '../../components/Header';
-import Footer from '../../components/Footer';
-import { fetchPlayerStats } from '../../api/fetchPlayerStats';
-import { useEffect, useState } from 'react';
-
 export default function UBD() {
   const [players, setPlayers] = useState([]);
 
