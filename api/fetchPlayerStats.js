@@ -68,3 +68,37 @@ export async function fetchPlayerStats(playerName) {
     averageDamage
   };
 }
+const playerData = await playerRes.json();
+console.log('플레이어 데이터:', playerData);  // 🔥 추가
+
+const matchesData = await matchesRes.json();
+console.log('매치 데이터:', matchesData);  // 🔥 추가
+
+const matchIds = matchesData.data.slice(0, 20).map(match => match.id);
+console.log('최근 매치 ID 리스트:', matchIds);  // 🔥 추가
+
+let totalDamage = 0;
+let matchCount = 0;
+
+for (const matchId of matchIds) {
+  const matchRes = await fetch(`https://api.pubg.com/shards/steam/matches/${matchId}`, {
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      Accept: 'application/vnd.api+json'
+    }
+  });
+
+  if (matchRes.ok) {
+    const matchData = await matchRes.json();
+    const playerStats = matchData.included.find(
+      item => item.type === 'participant' && item.attributes.stats.name === playerName
+    );
+
+    if (playerStats) {
+      totalDamage += playerStats.attributes.stats.damageDealt;
+      matchCount += 1;
+    }
+  }
+}
+
+console.log('총 딜량:', totalDamage, '총 경기 수:', matchCount);  // 🔥 추가
