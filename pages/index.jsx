@@ -15,7 +15,7 @@ export default function Home() {
     <div className="flex flex-col min-h-screen">
       <Header />
       <main className="flex-grow flex flex-col items-center justify-center p-8">
-        <h1 className="text-2xl font-bold mb-4">개인 유저의 아이디와 닉네임을 입력해주세요</h1>
+        <h1 className="text-2xl font-bold mb-4">PK.GG 나의 성향을 확인하세요.</h1>
         <form onSubmit={handleSubmit} className="flex flex-col items-center space-y-4 w-full max-w-md">
           <input
             type="text"
