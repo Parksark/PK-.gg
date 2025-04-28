@@ -78,15 +78,18 @@ export default function UBD() {
           <h2 className="text-2xl font-semibold mb-4">클랜원 목록</h2>
           <ul className="space-y-4">
             {players.map((player, index) => (
-              <li key={index} className="p-4 border rounded-md">
-                <strong>{player.name}</strong><br />
-                {player.error ? (
-                  <span className="text-red-500">데이터 불러오기 실패</span>
-                ) : (
-                  <span className="text-green-600">데이터 불러오기 성공</span>
-                )}
-              </li>
-            ))}
+  <li key={index} className="p-4 border rounded-md">
+    <strong>{player.name}</strong><br />
+    {player.error ? (
+      <span className="text-red-500">데이터 불러오기 실패</span>
+    ) : (
+      <>
+        <span className="text-green-600">데이터 불러오기 성공</span><br />
+        <span>평균 딜량: {Math.round(player.data.averageDamage)} </span>
+      </>
+    )}
+  </li>
+))}
           </ul>
         </section>
       </main>
